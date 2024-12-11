@@ -250,6 +250,7 @@ const handleDeviceCommand = (command) => {
       notify.error('Unknown command received:', command);
       return;
   }
+  allDevicesState.value = deviceStates.value.light && deviceStates.value.fan && deviceStates.value.door;
 };
 
 const toggleDeviceState = async (device) => {
