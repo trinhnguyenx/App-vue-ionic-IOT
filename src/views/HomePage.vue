@@ -89,7 +89,7 @@ const deviceStates = ref({
   door: false,
 });
 const allDevicesState = ref(false);
-const path = ref('https://fbb0-35-229-147-31.ngrok-free.app')
+const path = ref('https://3b53-34-168-97-224.ngrok-free.app')
 
 const isRecording = ref(false);
 const text_command = ref('Voice command');
@@ -177,7 +177,6 @@ const stopRecording = async () => {
   }
 };
 
-// Chuyển đổi Base64 thành Blob
 const base64ToBlob = (base64Data) => {
   const binaryString = atob(base64Data);
   const len = binaryString.length;
@@ -205,6 +204,8 @@ const sendAudioToServer = async (audioBlob) => {
       const responseJson = await response.json();
       handleDeviceCommand(responseJson.command);
       text_command.value = responseJson.you;
+      allDevicesState.value = deviceStates.value.light && deviceStates.value.fan && deviceStates.value.door
+
     } else {
       const errorText = await response.text();
       console.error('Failed to send audio:', errorText);
@@ -250,7 +251,6 @@ const handleDeviceCommand = (command) => {
       notify.error('Unknown command received:', command);
       return;
   }
-  allDevicesState.value = deviceStates.value.light && deviceStates.value.fan && deviceStates.value.door;
 };
 
 const toggleDeviceState = async (device) => {
@@ -275,12 +275,13 @@ const toggleDeviceState = async (device) => {
   }
 
   try {
-    const response = await fetch(`https://fbb0-35-229-147-31.ngrok-free.app/manual?raw_command=${command}`, {
+    const response = await fetch(`${path.value}/manual?raw_command=${command}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
     });
+    allDevicesState.value = deviceStates.value.light && deviceStates.value.fan && deviceStates.value.door
     if (response.ok) {
       console.log(`${device} state updated successfully`);
     } else {
